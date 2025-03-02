@@ -2,7 +2,10 @@ use std::process::Command;
 
 use anyhow::{anyhow, Result};
 
-use crate::{subtitle::file::SubtitleFile, video::file::VideoFile};
+use crate::{
+    subtitle::file::SubtitleFile,
+    video::{file::VideoFile, format::VideoFormat},
+};
 
 fn get_args_for_adding_subtitles<'a, S, O>(
     video_file: &'a VideoFile,
@@ -30,14 +33,10 @@ where
         ]);
     }
 
-    args.extend([
-        "-c".into(),
-        "copy".into(),
-        "-c:s".into(),
-        "mov_text".into(),
-        "-map".into(),
-        "0".into(),
-    ]);
+    args.extend(["-c".into(), "copy".into(), "-map".into(), "0".into()]);
+    if video_file.format == VideoFormat::MP4 {
+        args.extend(["-c:s".into(), "mov_text".into()]);
+    }
 
     for (i, sub) in subtitles.as_ref().iter().enumerate() {
         if let Some(language) = &sub.language {
