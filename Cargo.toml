@@ -1,0 +1,12 @@
+[package]
+name = "add-subtitles"
+description = "Simple CLI tool for adding subtitles into any video format."
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.96"
+clap = { version = "4.5.30", features = ["derive"] }
+
+[dev-dependencies]
+tempfile = "3.17.1"
