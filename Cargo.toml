@@ -1,5 +1,5 @@
 [package]
-name = "add-subtitles"
+name = "subtrack"
 description = "Simple CLI tool for adding subtitles into any video format."
 version = "0.1.0"
 edition = "2021"
