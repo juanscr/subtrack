@@ -2,25 +2,6 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 
-use crate::subtitle::{file::SubtitleFileBuilder, language::Language};
-
-pub fn fill_subtitle_builder<S>(
-    builder: &mut SubtitleFileBuilder,
-    subtitle_option: S,
-) -> Result<&mut SubtitleFileBuilder>
-where
-    S: AsRef<str>,
-{
-    Ok(if !subtitle_option.as_ref().contains(",") {
-        builder.with_file(subtitle_option)?
-    } else {
-        let (subtitle_file, language) = subtitle_option.as_ref().rsplit_once(',').unwrap();
-        builder
-            .with_file(subtitle_file)?
-            .with_language(Language::new(language)?)
-    })
-}
-
 pub fn parse_output_file<O, I>(output_file: Option<O>, input_file: I) -> Result<Box<str>>
 where
     O: AsRef<str>,
