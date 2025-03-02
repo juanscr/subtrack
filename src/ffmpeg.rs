@@ -33,11 +33,7 @@ where
         ]);
     }
 
-    args.extend(["-c".into(), "copy".into(), "-map".into(), "0".into()]);
-    if video_file.format == VideoFormat::MP4 {
-        args.extend(["-c:s".into(), "mov_text".into()]);
-    }
-
+    args.extend(["-map".into(), "0".into(), "-map".into(), "-0:s".into()]);
     for (i, sub) in subtitles.as_ref().iter().enumerate() {
         if let Some(language) = &sub.language {
             args.extend([
@@ -49,7 +45,10 @@ where
         }
     }
 
-    args.push(output_name.as_ref().into());
+    if video_file.format == VideoFormat::MP4 {
+        args.extend(["-c:s".into(), "mov_text".into()]);
+    }
+    args.extend(["-c".into(), "copy".into(), output_name.as_ref().into()]);
 
     return args;
 }
