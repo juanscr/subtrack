@@ -35,9 +35,9 @@ where
 
     args.extend(["-map".into(), "0".into(), "-map".into(), "-0:s".into()]);
     for (i, sub) in subtitles.as_ref().iter().enumerate() {
+        args.push("-map".into());
         if let Some(language) = &sub.language {
             args.extend([
-                "-map".into(),
                 format!("{}", i + 1).into(),
                 format!("-metadata:s:s:{}", i).into(),
                 format!("language={}", language.to_metadata_tag()).into(),
