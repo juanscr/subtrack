@@ -13,12 +13,15 @@ use video::file::VideoFileBuilder;
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
+    /// The video file to add the subtitles
     input_file: Box<str>,
 
+    /// The name of the output video file
     #[arg(short, long)]
     output_file: Option<Box<str>>,
 
-    #[arg(short, long)]
+    /// The subtitle file and language separated by a comma.
+    #[arg(short, long = "subtitle", value_name = "SUBTITLE,LANGUAGE")]
     subtitles: Vec<Box<str>>,
 }
 
