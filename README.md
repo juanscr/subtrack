@@ -1,4 +1,7 @@
-<h1 align="center" style="border-bottom: none;">subtrack</h1>
-<h3 align="center">Simple CLI tool for adding subtitles in video tracks.</h3>
+<h1 align="center">
+    subtrack
+</h1
 
+### Seamless CLI tool for adding subtitles in video tracks
 
+<div align="right">Yet another ffmpeg wrapper</div>
