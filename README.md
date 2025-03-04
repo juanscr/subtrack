@@ -1,10 +1,11 @@
 <h1 align="center">subtrack</h1>
-<h6 align="right">Yet another ffmpeg wrapper</h6>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/license-GPLv3-blue.svg" alt="License">
-  <img src="https://img.shields.io/badge/rust-1.56%2B-orange.svg" alt="Rust Version">
-</p>
+<div>
+    <h6 align="right">
+        <img align="left" src="https://img.shields.io/badge/license-GPLv3-blue.svg" alt="License">
+        <img align="left" src="https://img.shields.io/badge/rust-1.56%2B-orange.svg" alt="Rust Version">
+        Yet another ffmpeg wrapper
+    </h6>
+</div>
 
 <p align="center">
   Seamlessly add subtitles to your video files with ease!
