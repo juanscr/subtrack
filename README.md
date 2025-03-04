@@ -7,15 +7,23 @@
     </h6>
 </div>
 
-<p align="center">
-  Seamlessly add subtitles to your video files with ease!
-</p>
-
 ## Features
+
+Seamlessly add subtitles to your video files with ease!
 
 - **Automatic Subtitle Detection**: Automatically detects subtitle formats.
 - **Multiple Subtitle Streams**: Supports adding multiple subtitle streams to your video files, with the proper language metadata.
 - **Format Support**: Works with video formats like MP4 and MKV.
+
+## Table of contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Options](#options)
+  - [Examples](#examples)
+- [License](#license)
+- [Contributing](#contributing)
+- [Acknowledgements](#acknowledgements)
 
 ## Installation
 
@@ -33,7 +41,7 @@ subtrack [OPTIONS] <INPUT_FILE> --subtitle <SUBTITLE_FILE,LANGUAGE>...
 
 ### Options
 
-- `-o, --output-file <OUTPUT_FILE>`: The name of the output video file.
+- `-o, --output-file <OUTPUT_FILE>`: The name of the output video file. If not provided, the name of your input file with the suffix `-subs` will be created.
 - `-s, --subtitle <SUBTITLE_FILE,LANGUAGE>`: The subtitle file and language separated by a comma. This option can be used multiple times to add multiple subtitles.
 
 ### Examples
@@ -59,6 +67,8 @@ This project is licensed under the GNU General Public License v3.0. See the LICE
 Contributions are welcome! Please open an issue or submit a pull request.
 
 ## Acknowledgements
+
+This CLI tool wouldn't be possible without this amazing tools:
 
 - [FFmpeg](https://ffmpeg.org/) for the powerful multimedia framework.
 - [Rust](https://www.rust-lang.org/) for the safe and fast programming language.
