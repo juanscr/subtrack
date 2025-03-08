@@ -2,7 +2,9 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 
-pub fn parse_output_file<O, I>(output_file: Option<O>, input_file: I) -> Result<Box<str>>
+use crate::video::file::{VideoFile, VideoFileBuilder};
+
+pub fn parse_output_file<O, I>(output_file: Option<O>, input_file: I) -> Result<VideoFile>
 where
     O: AsRef<str>,
     I: AsRef<str>,
@@ -27,8 +29,7 @@ where
     if output_file_path == input_file_path {
         return Err(anyhow!("Output file can't be the same path as input file"));
     }
-    if output_file_path.exists() {
-        return Err(anyhow!("Output file path already exists."));
-    }
-    Ok(output_file_name.as_ref().into())
+    VideoFileBuilder::new()
+        .with_output_file(output_file_name)?
+        .build()
 }

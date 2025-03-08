@@ -34,7 +34,7 @@ fn main() -> Result<()> {
 
     // Obtain current subtitle stream of video
     let video_file = VideoFileBuilder::new()
-        .with_file(args.input_file)?
+        .with_input_file(args.input_file)?
         .build()?;
 
     // Parse subtitles and languages

@@ -53,16 +53,15 @@ where
     return args;
 }
 
-pub fn add_subtitles_to_video<S, O>(
+pub fn add_subtitles_to_video<S>(
     video_file: &VideoFile,
     subtitles: S,
-    output_file: O,
+    output_file: &VideoFile,
 ) -> Result<()>
 where
     S: AsRef<[SubtitleFile]>,
-    O: AsRef<str>,
 {
-    if subtitles.as_ref().len() > 1 && !video_file.supports_multiple_subtitle_streams() {
+    if subtitles.as_ref().len() > 1 && !output_file.supports_multiple_subtitle_streams() {
         return Err(anyhow!(
             "Video file with format {:?} does not support multiple subtitle streams.",
             video_file.format
@@ -72,7 +71,7 @@ where
         .args(get_args_for_adding_subtitles(
             video_file,
             &subtitles,
-            output_file,
+            &output_file.file_name,
         ))
         .spawn()?
         .wait()?;
