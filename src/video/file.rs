@@ -21,51 +21,53 @@ impl VideoFileBuilder {
     where
         S: AsRef<str>,
     {
-        self.with_file(file_name, true)
+        self.with_file(file_name, |file| {
+            if !file.exists() {
+                return Err(anyhow!(
+                    "Video {} does not exist. Please select an existing file.",
+                    file.display()
+                ));
+            }
+            if !file.is_file() {
+                return Err(anyhow!(
+                    "Video {} is not a file. Please select a valid file path.",
+                    file.display()
+                ));
+            }
+            Ok(())
+        })
     }
 
     pub fn with_output_file<S>(self, file_name: S) -> Result<Self>
     where
         S: AsRef<str>,
     {
-        self.with_file(file_name, false)
-    }
-
-    pub fn with_file<S>(self, file_name: S, validate_existence: bool) -> Result<Self>
-    where
-        S: AsRef<str>,
-    {
-        let file = Path::new(file_name.as_ref());
-
-        // Check if the file exists and is a file
-        if validate_existence {
-            if !file.exists() {
-                return Err(anyhow!(
-                    "Video {} does not exist. Please select an existing file.",
-                    file_name.as_ref()
-                ));
-            }
-            if !file.is_file() {
-                return Err(anyhow!(
-                    "Video {} is not a file. Please select a valid file path.",
-                    file_name.as_ref()
-                ));
-            }
-        }
-        if !validate_existence {
+        self.with_file(file_name, |file| {
             if file.exists() {
                 return Err(anyhow!(
                     "Output file {} path already exists.",
-                    file_name.as_ref()
+                    file.display()
                 ));
             }
             if file.is_dir() {
                 return Err(anyhow!(
                     "Output {} is a directory. Please select a valid file path.",
-                    file_name.as_ref()
+                    file.display()
                 ));
             }
-        }
+            Ok(())
+        })
+    }
+
+    pub fn with_file<S, F>(self, file_name: S, file_validator: F) -> Result<Self>
+    where
+        S: AsRef<str>,
+        F: Fn(&Path) -> Result<()>,
+    {
+        let file = Path::new(file_name.as_ref());
+
+        // Check if the file exists and is a file
+        file_validator(&file)?;
 
         let format = VideoFormat::new(file)?;
         Ok(VideoFileBuilder {
