@@ -1,4 +1,5 @@
 mod ffmpeg;
+mod mode;
 mod subtitle;
 mod utils;
 mod video;
@@ -6,6 +7,7 @@ mod video;
 use anyhow::{anyhow, Result};
 use clap::{command, Parser};
 use ffmpeg::add_subtitles_to_video;
+use mode::Mode;
 use subtitle::file::{SubtitleFile, SubtitleFileBuilder};
 use utils::parse_output_file;
 use video::file::VideoFileBuilder;
@@ -19,6 +21,10 @@ struct Cli {
     /// The name of the output video file
     #[arg(short, long)]
     output_file: Option<Box<str>>,
+
+    /// The name of the output video file
+    #[arg(short, long, default_value_t)]
+    mode: Mode,
 
     /// The subtitle file and language separated by a comma.
     #[arg(short, long = "subtitle", value_name = "SUBTITLE,LANGUAGE")]
@@ -51,6 +57,6 @@ fn main() -> Result<()> {
     let output_file = parse_output_file(args.output_file, &video_file.file_name)?;
 
     // Run ffmpeg command to add subtitles
-    add_subtitles_to_video(&video_file, subtitles, &output_file)?;
+    add_subtitles_to_video(&video_file, subtitles, &output_file, &args.mode)?;
     Ok(())
 }
