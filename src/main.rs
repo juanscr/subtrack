@@ -8,7 +8,7 @@ use anyhow::{anyhow, Result};
 use clap::{command, Parser};
 use ffmpeg::add_subtitles_to_video;
 use mode::Mode;
-use subtitle::file::{SubtitleFile, SubtitleFileBuilder};
+use subtitle::file::SubtitleFileBuilder;
 use utils::parse_output_file;
 use video::file::VideoFileBuilder;
 
@@ -44,7 +44,7 @@ fn main() -> Result<()> {
         .build()?;
 
     // Parse subtitles and languages
-    let mut subtitles = Vec::<SubtitleFile>::new();
+    let mut subtitles = Vec::with_capacity(args.subtitles.len());
     for subtitle_option in args.subtitles {
         subtitles.push(
             SubtitleFileBuilder::new()
