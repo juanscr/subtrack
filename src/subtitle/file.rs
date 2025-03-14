@@ -36,9 +36,13 @@ impl SubtitleFileBuilder {
             ));
         }
         let format = SubtitleFormat::new(&file)?;
+        let encoders = self
+            .language
+            .as_ref()
+            .map_or(None, |v| v.preferred_encoders());
 
         Ok(SubtitleFileBuilder {
-            file_name: Some(get_file_with_utf8_encoding(file, &format)?),
+            file_name: Some(get_file_with_utf8_encoding(file, &format, encoders)?),
             format: Some(format),
             ..self
         })

@@ -1,4 +1,5 @@
 use anyhow::{anyhow, Result};
+use encoding_rs::Encoding;
 
 pub enum Language {
     English,
@@ -24,6 +25,16 @@ impl Language {
             Language::Spanish => "spa".into(),
             Language::English => "eng".into(),
             Language::French => "fre".into(),
+        }
+    }
+
+    pub fn preferred_encoders(&self) -> Option<Box<[&'static Encoding]>> {
+        match self {
+            Language::Spanish => Some(Box::new([
+                encoding_rs::WINDOWS_1252,
+                encoding_rs::ISO_8859_15,
+            ])),
+            _ => None,
         }
     }
 }
