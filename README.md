@@ -55,19 +55,19 @@ subtrack --subtitle my_subtitle.srt,english my_video.mp4
 Add multiple subtitles to a video:
 
 ```sh
-subtrack --subtitle my_subtitle_en.srt,english --subtitle my_subtitle_es.srt,spanish my_video.mkv
+subtrack -s my_subtitle_en.srt,english -s my_subtitle_es.srt,spanish my_video.mkv
 ```
 
 Add subtitles with a custom output file name:
 
 ```sh
-subtrack --output-file my_output_video.mp4 --subtitle my_subtitle.srt,english my_video.mp4
+subtrack -o my_output_video.mp4 -s my_subtitle.srt,english my_video.mp4
 ```
 
 Add new subtitles while keeping the original ones:
 
 ```sh
-subtrack --mode append --subtitle my_subtitle.srt,english my_video.mp4
+subtrack -m append -s my_subtitle.srt,english my_video.mp4
 ```
 
 ## License
