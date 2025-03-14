@@ -2,7 +2,7 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 
-use super::{format::SubtitleFormat, language::Language};
+use super::{encoding::get_file_with_utf8_encoding, format::SubtitleFormat, language::Language};
 
 #[derive(Default)]
 pub struct SubtitleFileBuilder {
@@ -36,8 +36,9 @@ impl SubtitleFileBuilder {
             ));
         }
         let format = SubtitleFormat::new(&file)?;
+
         Ok(SubtitleFileBuilder {
-            file_name: Some(file_name.as_ref().into()),
+            file_name: Some(get_file_with_utf8_encoding(file, &format)?),
             format: Some(format),
             ..self
         })

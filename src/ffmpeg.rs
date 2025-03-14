@@ -29,7 +29,7 @@ where
     for sub in subtitles.as_ref().iter() {
         args.extend([
             "-f".to_owned(),
-            sub.format.to_ffmpeg_file_type().into(),
+            sub.format.to_extension().into(),
             "-i".to_owned(),
             sub.file_name.clone().into(),
         ]);

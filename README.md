@@ -9,7 +9,7 @@
 
 Seamlessly add subtitles to your video files with ease!
 
-- **Automatic Subtitle Detection**: Automatically detects subtitle formats.
+- **Automatic Subtitle Detection**: Automatically detects subtitle formats and encodes the content to UTF8.
 - **Multiple Subtitle Streams**: Supports adding multiple subtitle streams to your video files, with the proper language metadata.
 - **Format Support**: Works with video formats like MP4 and MKV.
 

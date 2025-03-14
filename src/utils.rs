@@ -11,11 +11,7 @@ where
 {
     let input_file_path = Path::new(input_file.as_ref());
     if output_file.is_none() {
-        let stem = input_file_path
-            .file_stem()
-            .ok_or_else(|| anyhow!("Could not extract stem from input file."))?
-            .to_str()
-            .ok_or_else(|| anyhow!("Could not extract stem from input file."))?;
+        let stem = get_file_stem(input_file_path)?;
         let extension = input_file_path
             .extension()
             .ok_or_else(|| anyhow!("Could not extract file extension."))?
@@ -32,4 +28,12 @@ where
     VideoFileBuilder::new()
         .with_output_file(output_file_name)?
         .build()
+}
+
+pub fn get_file_stem(file: &Path) -> Result<Box<str>> {
+    file.file_stem()
+        .ok_or_else(|| anyhow!("The file name is ill-formed. Please select a valid file."))?
+        .to_str()
+        .ok_or_else(|| anyhow!("The file name is ill-formed. Please select a valid file."))
+        .map(|s| s.into())
 }

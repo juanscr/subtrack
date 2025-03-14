@@ -20,7 +20,7 @@ impl SubtitleFormat {
         }
     }
 
-    pub fn to_ffmpeg_file_type(&self) -> Box<str> {
+    pub fn to_extension(&self) -> Box<str> {
         match self {
             SubtitleFormat::Srt => "srt".into(),
         }
@@ -33,6 +33,6 @@ mod tests {
 
     #[test]
     fn test_srt_file() {
-        assert_eq!(SubtitleFormat::Srt.to_ffmpeg_file_type().as_ref(), "srt")
+        assert_eq!(SubtitleFormat::Srt.to_extension().as_ref(), "srt")
     }
 }
