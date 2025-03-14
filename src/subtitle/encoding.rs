@@ -48,6 +48,17 @@ where
     ))
 }
 
+fn dos_to_unix_line_endings(buffer: &[u8]) -> Vec<u8> {
+    let mut result = Vec::new();
+    for &byte in buffer {
+        if byte == b'\r' {
+            continue; // Skip carriage return
+        }
+        result.push(byte);
+    }
+    result
+}
+
 pub fn get_file_with_utf8_encoding(file: &Path, format: &SubtitleFormat) -> Result<Box<str>> {
     let file_name = file
         .to_str()
@@ -60,11 +71,12 @@ pub fn get_file_with_utf8_encoding(file: &Path, format: &SubtitleFormat) -> Resu
 
     let file_buffer = get_file_buffer(file_name)?;
     let decoded_buffer = change_encoding_to_utf8(&file_buffer)?;
+    let unix_encoded_buffer = dos_to_unix_line_endings(&decoded_buffer);
 
     // Create a new file with the same name but with a -utf8 suffix and encoded content
     let file_stem = get_file_stem(file)?;
     let new_file_name = format!("{}-utf8.{}", file_stem, format.to_extension());
     let mut file_buffer = File::create(&new_file_name)?;
-    file_buffer.write_all(&decoded_buffer)?;
+    file_buffer.write_all(&unix_encoded_buffer)?;
     Ok(new_file_name.into())
 }
