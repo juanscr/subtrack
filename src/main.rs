@@ -43,6 +43,15 @@ fn main() -> Result<()> {
         .with_input_file(args.input_file)?
         .build()?;
 
+    // Get output file
+    let output_file = parse_output_file(args.output_file, &video_file.file_name)?;
+    if args.subtitles.len() > 1 && !output_file.supports_multiple_subtitle_streams() {
+        return Err(anyhow!(
+            "Video file with format {:?} does not support multiple subtitle streams.",
+            video_file.format
+        ));
+    }
+
     // Parse subtitles and languages
     let mut subtitles = Vec::with_capacity(args.subtitles.len());
     for subtitle_option in args.subtitles {
@@ -52,9 +61,6 @@ fn main() -> Result<()> {
                 .build()?,
         );
     }
-
-    // Get output file
-    let output_file = parse_output_file(args.output_file, &video_file.file_name)?;
 
     // Run ffmpeg command to add subtitles
     add_subtitles_to_video(&video_file, subtitles, &output_file, &args.mode)?;

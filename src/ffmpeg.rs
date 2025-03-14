@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 use crate::{
     mode::Mode,
@@ -67,12 +67,6 @@ pub fn add_subtitles_to_video<S>(
 where
     S: AsRef<[SubtitleFile]>,
 {
-    if subtitles.as_ref().len() > 1 && !output_file.supports_multiple_subtitle_streams() {
-        return Err(anyhow!(
-            "Video file with format {:?} does not support multiple subtitle streams.",
-            video_file.format
-        ));
-    }
     Command::new("ffmpeg")
         .args(get_args_for_adding_subtitles(
             video_file,
