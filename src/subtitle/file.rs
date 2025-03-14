@@ -2,13 +2,18 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 
-use super::{encoding::get_file_with_utf8_encoding, format::SubtitleFormat, language::Language};
+use super::{
+    encoding::get_file_with_utf8_encoding, format::SubtitleFormat, language::Language,
+    mode::SubtitleMode,
+};
 
 #[derive(Default)]
 pub struct SubtitleFileBuilder {
     file_name: Option<Box<str>>,
     language: Option<Language>,
     format: Option<SubtitleFormat>,
+    mode: Option<SubtitleMode>,
+    is_original_subtitle_file: bool,
 }
 
 impl SubtitleFileBuilder {
@@ -18,7 +23,7 @@ impl SubtitleFileBuilder {
         }
     }
 
-    pub fn with_file<S>(self, file_name: S) -> Result<Self>
+    pub fn with_file<S>(self, file_name: S, subtitle_mode: SubtitleMode) -> Result<Self>
     where
         S: AsRef<str>,
     {
@@ -41,9 +46,13 @@ impl SubtitleFileBuilder {
             .as_ref()
             .map_or(None, |v| v.preferred_encoders());
 
+        let (subtitle_file_name, is_transformed) =
+            get_file_with_utf8_encoding(file, &format, encoders, &subtitle_mode)?;
         Ok(SubtitleFileBuilder {
-            file_name: Some(get_file_with_utf8_encoding(file, &format, encoders)?),
+            file_name: Some(subtitle_file_name),
             format: Some(format),
+            mode: Some(subtitle_mode),
+            is_original_subtitle_file: !is_transformed,
             ..self
         })
     }
@@ -55,16 +64,16 @@ impl SubtitleFileBuilder {
         }
     }
 
-    pub fn with_subtitle_option<S>(self, subtitle_option: S) -> Result<Self>
+    pub fn with_subtitle_option<S>(self, subtitle_option: S, mode: SubtitleMode) -> Result<Self>
     where
         S: AsRef<str>,
     {
         if !subtitle_option.as_ref().contains(",") {
-            self.with_file(subtitle_option)
+            self.with_file(subtitle_option, mode)
         } else {
             let (subtitle_file, language) = subtitle_option.as_ref().rsplit_once(',').unwrap();
             self.with_language(Language::new(language)?)
-                .with_file(subtitle_file)
+                .with_file(subtitle_file, mode)
         }
     }
 
@@ -75,10 +84,16 @@ impl SubtitleFileBuilder {
         let format = self
             .format
             .ok_or_else(|| anyhow!("The file format is not define."))?;
+        let mode = self.mode.ok_or_else(|| {
+            anyhow!("The subtitle mode is not defined. Please select a valid mode.")
+        })?;
+
         return Ok(SubtitleFile {
             file_name,
             format,
             language: self.language,
+            mode,
+            is_original_subtitle_file: self.is_original_subtitle_file,
         });
     }
 }
@@ -87,4 +102,15 @@ pub struct SubtitleFile {
     pub language: Option<Language>,
     pub format: SubtitleFormat,
     pub file_name: Box<str>,
+    pub mode: SubtitleMode,
+    pub is_original_subtitle_file: bool,
+}
+
+impl Drop for SubtitleFile {
+    fn drop(&mut self) {
+        if self.is_original_subtitle_file || !self.mode.should_remove_file() {
+            return;
+        }
+        std::fs::remove_file(self.file_name.as_ref()).unwrap();
+    }
 }

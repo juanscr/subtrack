@@ -8,7 +8,7 @@ use anyhow::{anyhow, Result};
 use clap::{command, Parser};
 use ffmpeg::add_subtitles_to_video;
 use mode::Mode;
-use subtitle::file::SubtitleFileBuilder;
+use subtitle::{file::SubtitleFileBuilder, mode::SubtitleMode};
 use utils::parse_output_file;
 use video::file::VideoFileBuilder;
 
@@ -29,6 +29,10 @@ struct Cli {
     /// The subtitle file and language separated by a comma.
     #[arg(short, long = "subtitle", value_name = "SUBTITLE,LANGUAGE")]
     subtitles: Vec<Box<str>>,
+
+    /// Changes the way how the created subtitle files are handled
+    #[arg(short = 'u', long, default_value_t)]
+    subtitle_mode: SubtitleMode,
 }
 
 fn main() -> Result<()> {
@@ -57,7 +61,7 @@ fn main() -> Result<()> {
     for subtitle_option in args.subtitles {
         subtitles.push(
             SubtitleFileBuilder::new()
-                .with_subtitle_option(subtitle_option)?
+                .with_subtitle_option(subtitle_option, args.subtitle_mode)?
                 .build()?,
         );
     }
