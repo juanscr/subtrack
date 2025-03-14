@@ -22,7 +22,7 @@ struct Cli {
     #[arg(short, long)]
     output_file: Option<Box<str>>,
 
-    /// The name of the output video file
+    /// How subtitles are added to the video container
     #[arg(short, long, default_value_t)]
     mode: Mode,
 
