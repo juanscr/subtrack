@@ -41,6 +41,8 @@ subtrack [OPTIONS] <INPUT_FILE> --subtitle <SUBTITLE_FILE,LANGUAGE>...
 
 - `-o, --output-file <OUTPUT_FILE>`: The name of the output video file. If not provided, the name of your input file with the suffix `-subs` will be created.
 - `-s, --subtitle <SUBTITLE_FILE,LANGUAGE>`: The subtitle file and language separated by a comma. This option can be used multiple times to add multiple subtitles.
+- `-m, --mode <MODE>`: How subtitles are added to the video container. Options include `append`, `replace` and `overwrite`.
+- `-u, --subtitle-mode <SUBTITLE_MODE>`: Changes the way how the created fixed subtitle files are handled. Options include `keep`, `replace` and `remove`.
 
 ### Examples
 
@@ -54,6 +56,18 @@ Add multiple subtitles to a video:
 
 ```sh
 subtrack --subtitle my_subtitle_en.srt,english --subtitle my_subtitle_es.srt,spanish my_video.mkv
+```
+
+Add subtitles with a custom output file name:
+
+```sh
+subtrack --output-file my_output_video.mp4 --subtitle my_subtitle.srt,english my_video.mp4
+```
+
+Add new subtitles while keeping the original ones:
+
+```sh
+subtrack --mode append --subtitle my_subtitle.srt,english my_video.mp4
 ```
 
 ## License
