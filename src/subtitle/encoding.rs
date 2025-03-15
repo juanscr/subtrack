@@ -8,7 +8,7 @@ use encoding_rs::Encoding;
 use encoding_rs_io::DecodeReaderBytesBuilder;
 
 use super::format::SubtitleFormat;
-use super::mode::SubtitleMode;
+use super::handling::SubtitleHandling;
 
 fn get_file_buffer<S>(
     file_path: S,
@@ -66,7 +66,7 @@ pub fn get_file_with_utf8_encoding(
     file: &Path,
     format: &SubtitleFormat,
     preferred_encoders: Option<Box<[&'static Encoding]>>,
-    mode: &SubtitleMode,
+    handling: &SubtitleHandling,
 ) -> Result<(Box<str>, bool)> {
     let file_name = file
         .to_str()
@@ -85,8 +85,7 @@ pub fn get_file_with_utf8_encoding(
         decoded_buffer = dos_to_unix_line_endings(&decoded_buffer);
     }
 
-    // Create a new file with the same name but with a -fixed suffix and encoded content
-    let new_file_name = mode.get_file_name(file, format.to_extension())?;
+    let new_file_name = handling.get_file_name(file, format.to_extension())?;
     let mut file_buffer = File::create(new_file_name.as_ref())?;
     file_buffer.write_all(decoded_buffer.as_bytes())?;
     Ok((new_file_name.into(), true))

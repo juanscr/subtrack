@@ -4,7 +4,7 @@ use std::{fmt, vec};
 use crate::subtitle::file::SubtitleFile;
 
 #[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
-pub enum Mode {
+pub enum Behavior {
     /// Keep all pre-existing tracks and add the new ones.
     Append,
 
@@ -16,27 +16,27 @@ pub enum Mode {
     Overwrite,
 }
 
-impl fmt::Display for Mode {
+impl fmt::Display for Behavior {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Mode::Append => write!(f, "append"),
-            Mode::Replace => write!(f, "replace"),
-            Mode::Overwrite => write!(f, "overwrite"),
+            Behavior::Append => write!(f, "append"),
+            Behavior::Replace => write!(f, "replace"),
+            Behavior::Overwrite => write!(f, "overwrite"),
         }
     }
 }
 
-impl Mode {
+impl Behavior {
     pub fn to_ffmpeg_flags<S>(&self, subtitles: S) -> Option<Vec<String>>
     where
         S: AsRef<[SubtitleFile]>,
     {
         match self {
             // Don't negatively map any subtitles
-            Mode::Append => None,
+            Behavior::Append => None,
 
             // Negative map all subtitles that have the languages present in the subtitles list
-            Mode::Replace => {
+            Behavior::Replace => {
                 let mut flags = Vec::<String>::new();
                 for sub in subtitles.as_ref().iter() {
                     if let Some(language) = &sub.language {
@@ -53,7 +53,7 @@ impl Mode {
             }
 
             // Negative map all subtitles tracks from the original
-            Mode::Overwrite => Some(vec!["-map".into(), "-0:s".into()]),
+            Behavior::Overwrite => Some(vec!["-map".into(), "-0:s".into()]),
         }
     }
 }

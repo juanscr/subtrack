@@ -3,7 +3,7 @@ use std::process::Command;
 use anyhow::Result;
 
 use crate::{
-    mode::Mode,
+    behavior::Behavior,
     subtitle::file::SubtitleFile,
     video::{file::VideoFile, format::VideoFormat},
 };
@@ -12,7 +12,7 @@ fn get_args_for_adding_subtitles<'a, S, O>(
     video_file: &'a VideoFile,
     subtitles: S,
     output_name: O,
-    mode: &Mode,
+    behavior: &Behavior,
 ) -> Vec<String>
 where
     S: AsRef<[SubtitleFile]>,
@@ -36,7 +36,7 @@ where
     }
 
     args.extend(["-map".into(), "0".into()]);
-    if let Some(mode_ffmpeg_flags) = mode.to_ffmpeg_flags(&subtitles) {
+    if let Some(mode_ffmpeg_flags) = behavior.to_ffmpeg_flags(&subtitles) {
         args.extend(mode_ffmpeg_flags);
     }
     for (i, sub) in subtitles.as_ref().iter().enumerate() {
@@ -62,7 +62,7 @@ pub fn add_subtitles_to_video<S>(
     video_file: &VideoFile,
     subtitles: S,
     output_file: &VideoFile,
-    mode: &Mode,
+    behavior: &Behavior,
 ) -> Result<()>
 where
     S: AsRef<[SubtitleFile]>,
@@ -72,7 +72,7 @@ where
             video_file,
             &subtitles,
             &output_file.file_name,
-            mode,
+            behavior,
         ))
         .spawn()?
         .wait()?;

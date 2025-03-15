@@ -3,8 +3,8 @@ use std::path::Path;
 use anyhow::{anyhow, Result};
 
 use super::{
-    encoding::get_file_with_utf8_encoding, format::SubtitleFormat, language::Language,
-    mode::SubtitleMode,
+    encoding::get_file_with_utf8_encoding, format::SubtitleFormat, handling::SubtitleHandling,
+    language::Language,
 };
 
 #[derive(Default)]
@@ -12,7 +12,7 @@ pub struct SubtitleFileBuilder {
     file_name: Option<Box<str>>,
     language: Option<Language>,
     format: Option<SubtitleFormat>,
-    mode: Option<SubtitleMode>,
+    handling: Option<SubtitleHandling>,
     is_original_subtitle_file: bool,
 }
 
@@ -23,7 +23,7 @@ impl SubtitleFileBuilder {
         }
     }
 
-    pub fn with_file<S>(self, file_name: S, subtitle_mode: SubtitleMode) -> Result<Self>
+    pub fn with_file<S>(self, file_name: S, subtitle_mode: SubtitleHandling) -> Result<Self>
     where
         S: AsRef<str>,
     {
@@ -51,7 +51,7 @@ impl SubtitleFileBuilder {
         Ok(SubtitleFileBuilder {
             file_name: Some(subtitle_file_name),
             format: Some(format),
-            mode: Some(subtitle_mode),
+            handling: Some(subtitle_mode),
             is_original_subtitle_file: !is_transformed,
             ..self
         })
@@ -64,7 +64,7 @@ impl SubtitleFileBuilder {
         }
     }
 
-    pub fn with_subtitle_option<S>(self, subtitle_option: S, mode: SubtitleMode) -> Result<Self>
+    pub fn with_subtitle_option<S>(self, subtitle_option: S, mode: SubtitleHandling) -> Result<Self>
     where
         S: AsRef<str>,
     {
@@ -84,7 +84,7 @@ impl SubtitleFileBuilder {
         let format = self
             .format
             .ok_or_else(|| anyhow!("The file format is not define."))?;
-        let mode = self.mode.ok_or_else(|| {
+        let mode = self.handling.ok_or_else(|| {
             anyhow!("The subtitle mode is not defined. Please select a valid mode.")
         })?;
 
@@ -102,7 +102,7 @@ pub struct SubtitleFile {
     pub language: Option<Language>,
     pub format: SubtitleFormat,
     pub file_name: Box<str>,
-    pub mode: SubtitleMode,
+    pub mode: SubtitleHandling,
     pub is_original_subtitle_file: bool,
 }
 

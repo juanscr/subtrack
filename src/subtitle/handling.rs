@@ -6,7 +6,7 @@ use clap::ValueEnum;
 use crate::utils::get_file_stem;
 
 #[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
-pub enum SubtitleMode {
+pub enum SubtitleHandling {
     /// Keep all generated subtitle files when fixing the encoding.
     Keep,
 
@@ -18,21 +18,21 @@ pub enum SubtitleMode {
     Remove,
 }
 
-impl fmt::Display for SubtitleMode {
+impl fmt::Display for SubtitleHandling {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            SubtitleMode::Keep => write!(f, "keep"),
-            SubtitleMode::Replace => write!(f, "replace"),
-            SubtitleMode::Remove => write!(f, "remove"),
+            SubtitleHandling::Keep => write!(f, "keep"),
+            SubtitleHandling::Replace => write!(f, "replace"),
+            SubtitleHandling::Remove => write!(f, "remove"),
         }
     }
 }
 
-impl SubtitleMode {
+impl SubtitleHandling {
     pub fn get_file_name(&self, file: &Path, extension: Box<str>) -> Result<Box<str>> {
         let file_stem = get_file_stem(file)?;
         match self {
-            SubtitleMode::Replace => Ok(file
+            SubtitleHandling::Replace => Ok(file
                 .to_str()
                 .ok_or_else(|| anyhow!("The file name is ill-formed. Please select a valid file."))?
                 .into()),
@@ -41,6 +41,6 @@ impl SubtitleMode {
     }
 
     pub fn should_remove_file(&self) -> bool {
-        matches!(self, SubtitleMode::Remove)
+        matches!(self, SubtitleHandling::Remove)
     }
 }

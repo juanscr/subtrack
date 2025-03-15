@@ -1,14 +1,14 @@
+mod behavior;
 mod ffmpeg;
-mod mode;
 mod subtitle;
 mod utils;
 mod video;
 
 use anyhow::{anyhow, Result};
+use behavior::Behavior;
 use clap::{command, Parser};
 use ffmpeg::add_subtitles_to_video;
-use mode::Mode;
-use subtitle::{file::SubtitleFileBuilder, mode::SubtitleMode};
+use subtitle::{file::SubtitleFileBuilder, handling::SubtitleHandling};
 use utils::parse_output_file;
 use video::file::VideoFileBuilder;
 
@@ -24,15 +24,15 @@ struct Cli {
 
     /// How subtitles are added to the video container
     #[arg(short, long, default_value_t)]
-    mode: Mode,
+    behavior: Behavior,
+
+    /// Changes the way how the created subtitle files are handled
+    #[arg(short, long, default_value_t)]
+    temp_subtitle_handling: SubtitleHandling,
 
     /// The subtitle file and language separated by a comma.
     #[arg(short, long = "subtitle", value_name = "SUBTITLE,LANGUAGE")]
     subtitles: Vec<Box<str>>,
-
-    /// Changes the way how the created subtitle files are handled
-    #[arg(short = 'u', long, default_value_t)]
-    subtitle_mode: SubtitleMode,
 }
 
 fn main() -> Result<()> {
@@ -61,12 +61,12 @@ fn main() -> Result<()> {
     for subtitle_option in args.subtitles {
         subtitles.push(
             SubtitleFileBuilder::new()
-                .with_subtitle_option(subtitle_option, args.subtitle_mode)?
+                .with_subtitle_option(subtitle_option, args.temp_subtitle_handling)?
                 .build()?,
         );
     }
 
     // Run ffmpeg command to add subtitles
-    add_subtitles_to_video(&video_file, subtitles, &output_file, &args.mode)?;
+    add_subtitles_to_video(&video_file, subtitles, &output_file, &args.behavior)?;
     Ok(())
 }
