@@ -23,27 +23,25 @@ where
         "-loglevel".to_owned(),
         "error".to_owned(),
         "-i".to_owned(),
-        video_file.file_name.clone().into(),
+        video_file.get_file_name().into(),
     ]);
 
-    for sub in subtitles.as_ref().iter() {
+    for (i, sub) in subtitles.as_ref().iter().enumerate() {
         args.extend([
             "-f".to_owned(),
             sub.format.to_extension().into(),
             "-i".to_owned(),
             sub.file_name.clone().into(),
+            "-map".to_owned(),
+            format!("{}", i + 1).into(),
         ]);
     }
 
     args.extend(["-map".into(), "0".into()]);
-    if let Some(mode_ffmpeg_flags) = behavior.to_ffmpeg_flags(&subtitles) {
-        args.extend(mode_ffmpeg_flags);
-    }
+    args.extend(behavior.get_args_for_adding_subtitles(video_file, &subtitles));
     for (i, sub) in subtitles.as_ref().iter().enumerate() {
-        args.push("-map".into());
         if let Some(language) = &sub.language {
             args.extend([
-                format!("{}", i + 1).into(),
                 format!("-metadata:s:s:{}", i).into(),
                 format!("language={}", language.to_metadata_tag()).into(),
             ]);

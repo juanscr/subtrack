@@ -1,5 +1,5 @@
 mod behavior;
-mod ffmpeg;
+mod external;
 mod subtitle;
 mod utils;
 mod video;
@@ -7,7 +7,7 @@ mod video;
 use anyhow::{anyhow, Result};
 use behavior::Behavior;
 use clap::{command, Parser};
-use ffmpeg::add_subtitles_to_video;
+use external::ffmpeg::add_subtitles_to_video;
 use subtitle::{file::SubtitleFileBuilder, handling::SubtitleHandling};
 use utils::parse_output_file;
 use video::file::VideoFileBuilder;

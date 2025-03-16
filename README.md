@@ -41,7 +41,7 @@ subtrack [OPTIONS] <INPUT_FILE> --subtitle <SUBTITLE_FILE,LANGUAGE>...
 
 - `-o, --output-file <OUTPUT_FILE>`: The name of the output video file. If not provided, the name of your input file with the suffix `-subs` will be created.
 - `-s, --subtitle <SUBTITLE_FILE,LANGUAGE>`: The subtitle file and language separated by a comma. This option can be used multiple times to add multiple subtitles.
-- `-b, --behavior <BEHAVIOR>`: How subtitles are added to the video container. Options include `append`, `replace` and `overwrite`.
+- `-b, --behavior <BEHAVIOR>`: How subtitles are added to the video container. Options include `append` and `overwrite`.
 - `-t, --temp-subtitle-handling <SUBTITLE_HANDLING>`: Changes the way how the created fixed subtitle files are handled. Options include `keep`, `replace` and `remove`.
 
 ### Examples
@@ -67,7 +67,7 @@ subtrack -o my_output_video.mp4 -s my_subtitle.srt,english my_video.mp4
 Add new subtitles while keeping the original ones:
 
 ```sh
-subtrack -m append -s my_subtitle.srt,english my_video.mp4
+subtrack -b append -s my_subtitle.srt,english my_video.mp4
 ```
 
 ## License
