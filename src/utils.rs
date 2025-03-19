@@ -12,11 +12,7 @@ where
     let input_file_path = Path::new(input_file.as_ref());
     if output_file.is_none() {
         let stem = get_file_stem(input_file_path)?;
-        let extension = input_file_path
-            .extension()
-            .ok_or_else(|| anyhow!("Could not extract file extension."))?
-            .to_str()
-            .ok_or_else(|| anyhow!("Could not extract file extension."))?;
+        let extension = get_file_extension(input_file_path)?;
         return parse_output_file(format!("{}-subs.{}", stem, extension).into(), input_file);
     }
 
@@ -31,9 +27,34 @@ where
 }
 
 pub fn get_file_stem(file: &Path) -> Result<Box<str>> {
+    let file_name = file.display();
     file.file_stem()
-        .ok_or_else(|| anyhow!("The file name is ill-formed. Please select a valid file."))?
+        .ok_or_else(|| anyhow!("The file {} doesn't have a file name.", file_name))?
         .to_str()
-        .ok_or_else(|| anyhow!("The file name is ill-formed. Please select a valid file."))
+        .ok_or_else(|| {
+            anyhow!(
+                "The file {} is not valid UTF-8. Please rename the file.",
+                file_name
+            )
+        })
+        .map(|s| s.into())
+}
+
+pub fn get_file_extension(file: &Path) -> Result<Box<str>> {
+    let file_name = file.display();
+    file.extension()
+        .ok_or_else(|| {
+            anyhow!(
+                "The file {} doesn't have an extension. Please rename it.",
+                file_name
+            )
+        })?
+        .to_str()
+        .ok_or_else(|| {
+            anyhow!(
+                "The file {} is not valid UTF-8. Please rename the file.",
+                file_name
+            )
+        })
         .map(|s| s.into())
 }

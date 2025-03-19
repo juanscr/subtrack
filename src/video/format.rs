@@ -2,6 +2,8 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 
+use crate::utils::get_file_extension;
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum VideoFormat {
     MP4,
@@ -11,13 +13,9 @@ pub enum VideoFormat {
 impl VideoFormat {
     // TODO: Rewrite this to not relay in the extension but internal metadata
     pub fn new(file: &Path) -> Result<Self> {
-        let file_extension = file
-            .extension()
-            .ok_or_else(|| anyhow!("File doesn't have an extension set."))?
-            .to_str()
-            .ok_or_else(|| anyhow!("File extension is ill-formed."))?;
+        let file_extension = get_file_extension(file)?;
 
-        match file_extension {
+        match file_extension.as_ref() {
             "mp4" => Ok(VideoFormat::MP4),
             "mkv" => Ok(VideoFormat::MKV),
             extension => Err(anyhow!("File extension {} not supported.", extension)),

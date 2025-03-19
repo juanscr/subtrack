@@ -2,19 +2,16 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 
+use crate::utils::get_file_extension;
+
 pub enum SubtitleFormat {
     Srt,
 }
 
 impl SubtitleFormat {
     pub fn new(file: &Path) -> Result<Self> {
-        let file_extension = file
-            .extension()
-            .ok_or_else(|| anyhow!("File doesn't have an extension set."))?
-            .to_str()
-            .ok_or_else(|| anyhow!("File extension is ill-formed."))?;
-
-        match file_extension {
+        let file_extension = get_file_extension(file)?;
+        match file_extension.as_ref() {
             "srt" => Ok(SubtitleFormat::Srt),
             extension => Err(anyhow!("File extension {} not supported.", extension)),
         }

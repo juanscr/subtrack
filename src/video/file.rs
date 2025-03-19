@@ -53,7 +53,7 @@ impl VideoFileBuilder {
             }
             if file.is_dir() {
                 return Err(anyhow!(
-                    "Output {} is a directory. Please select a valid file path.",
+                    "Output file {} is a directory. Please select a valid file path.",
                     file.display()
                 ));
             }
@@ -85,7 +85,7 @@ impl VideoFileBuilder {
             .ok_or_else(|| anyhow!("A file name is required."))?;
         let format = self
             .format
-            .ok_or_else(|| anyhow!("The file format is not define."))?;
+            .ok_or_else(|| anyhow!("The file format is not defined."))?;
 
         Ok(VideoFile {
             file_name: file_name.into(),

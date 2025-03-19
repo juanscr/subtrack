@@ -10,38 +10,36 @@ use encoding_rs_io::DecodeReaderBytesBuilder;
 use super::format::SubtitleFormat;
 use super::handling::SubtitleHandling;
 
-fn get_file_buffer<S>(
-    file_path: S,
+fn get_file_buffer(
+    path: &Path,
     preferred_encoders: Option<Box<[&'static Encoding]>>,
-) -> Result<(String, bool)>
-where
-    S: AsRef<str>,
-{
-    let utf8_base_read = read_file(file_path.as_ref(), None);
+) -> Result<(String, bool)> {
+    let utf8_base_read = read_file(path, None);
     if let Ok(utf8_buffer) = utf8_base_read {
         return Ok((utf8_buffer, false));
     }
 
     // Try reading the file with other encodings
     if preferred_encoders.is_none() {
-        return Err(anyhow!("Failed to read the file with UTF-8 encoding."));
+        return Err(anyhow!(
+            "Failed to read the file {} with UTF-8 encoding.",
+            path.display()
+        ));
     }
     for encoder in preferred_encoders.unwrap().iter() {
-        let encoded_read = read_file(file_path.as_ref(), Some(encoder));
+        let encoded_read = read_file(path, Some(encoder));
         if let Ok(buffer) = encoded_read {
             return Ok((buffer, true));
         }
     }
     Err(anyhow!(
-        "Failed to read the file with any of the preferred encoders."
+        "Failed to read the file {} with any of the preferred encoders.",
+        path.display()
     ))
 }
 
-fn read_file<S>(file_path: S, encoding: Option<&'static Encoding>) -> Result<String>
-where
-    S: AsRef<str>,
-{
-    let file = File::open(file_path.as_ref())?;
+fn read_file(path: &Path, encoding: Option<&'static Encoding>) -> Result<String> {
+    let file = File::open(path)?;
     let decoder = DecodeReaderBytesBuilder::new()
         .encoding(encoding)
         .build(file);
@@ -51,7 +49,10 @@ where
     if utf8_read.is_ok() {
         return Ok(utf8_buffer);
     }
-    return Err(anyhow!("Failed to read the file with UTF-8 encoding."));
+    return Err(anyhow!(
+        "Failed to encode the file {} to UTF-8 encoding.",
+        path.display()
+    ));
 }
 
 fn has_dos_line_endings(buffer: &String) -> bool {
@@ -68,15 +69,17 @@ pub fn get_file_with_utf8_encoding(
     preferred_encoders: Option<Box<[&'static Encoding]>>,
     handling: &SubtitleHandling,
 ) -> Result<(Box<str>, bool)> {
-    let file_name = file
-        .to_str()
-        .ok_or_else(|| anyhow!("The file name is ill-formed. Please select a valid file."))?;
-
-    let (file_buffer, is_transformed) = get_file_buffer(file_name, preferred_encoders)?;
+    let (file_buffer, is_transformed) = get_file_buffer(file, preferred_encoders)?;
     let has_dos_line_endings = has_dos_line_endings(&file_buffer);
 
     // If the file is already UTF-8 encoded and does not have DOS line endings, return it as is
     if !is_transformed && !has_dos_line_endings {
+        let file_name = file.to_str().ok_or_else(|| {
+            anyhow!(
+                "The file {} is not valid UTF-8. Please rename the file.",
+                file.display()
+            )
+        })?;
         return Ok((file_name.into(), false));
     }
 
