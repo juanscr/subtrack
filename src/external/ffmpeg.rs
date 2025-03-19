@@ -26,27 +26,20 @@ where
         video_file.get_file_name().into(),
     ]);
 
-    for (i, sub) in subtitles.as_ref().iter().enumerate() {
+    for sub in subtitles.as_ref().iter() {
         args.extend([
             "-f".to_owned(),
             sub.format.to_extension().into(),
             "-i".to_owned(),
             sub.file_name.clone().into(),
-            "-map".to_owned(),
-            format!("{}", i + 1).into(),
         ]);
     }
-
     args.extend(["-map".into(), "0".into()]);
-    args.extend(behavior.get_args_for_adding_subtitles(video_file, &subtitles));
-    for (i, sub) in subtitles.as_ref().iter().enumerate() {
-        if let Some(language) = &sub.language {
-            args.extend([
-                format!("-metadata:s:s:{}", i).into(),
-                format!("language={}", language.to_metadata_tag()).into(),
-            ]);
-        }
+    for i in 0..subtitles.as_ref().len() {
+        args.extend(["-map".to_owned(), format!("{}", i + 1).into()]);
     }
+
+    args.extend(behavior.get_args_for_adding_subtitles(&subtitles));
 
     if video_file.format == VideoFormat::MP4 {
         args.extend(["-c:s".into(), "mov_text".into()]);
