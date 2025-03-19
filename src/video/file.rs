@@ -2,8 +2,6 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 
-use crate::{external::ffprobe::get_number_of_subtitles, subtitle::language::Language};
-
 use super::format::VideoFormat;
 
 #[derive(Default)]
@@ -107,10 +105,6 @@ impl VideoFile {
 
     pub fn get_file_name(&self) -> &str {
         self.file_name.as_ref()
-    }
-
-    pub fn get_number_of_subtitles(&self, language: Option<&Language>) -> usize {
-        get_number_of_subtitles(self.get_file_name(), language).unwrap_or(0)
     }
 }
 
