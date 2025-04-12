@@ -2,9 +2,16 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 
-use crate::video::file::{VideoFile, VideoFileBuilder};
+use crate::{
+    logger::CLILogger,
+    video::file::{VideoFile, VideoFileBuilder},
+};
 
-pub fn parse_output_file<O, I>(output_file: Option<O>, input_file: I) -> Result<VideoFile>
+pub fn parse_output_file<O, I>(
+    output_file: Option<O>,
+    input_file: I,
+    logger: &CLILogger,
+) -> Result<VideoFile>
 where
     O: AsRef<str>,
     I: AsRef<str>,
@@ -13,14 +20,20 @@ where
     if output_file.is_none() {
         let stem = get_file_stem(input_file_path)?;
         let extension = get_file_extension(input_file_path)?;
-        return parse_output_file(format!("{}-subs.{}", stem, extension).into(), input_file);
+        return parse_output_file(
+            format!("{}-subs.{}", stem, extension).into(),
+            input_file,
+            logger,
+        );
     }
 
     let output_file_name = output_file.unwrap();
+    logger.report_output_file_parsing(&output_file_name)?;
     let output_file_path = Path::new(output_file_name.as_ref());
     if output_file_path == input_file_path {
         return Err(anyhow!("Output file can't be the same path as input file"));
     }
+
     VideoFileBuilder::new()
         .with_output_file(output_file_name)?
         .build()

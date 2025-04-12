@@ -6,6 +6,7 @@ use super::{
     encoding::get_file_with_utf8_encoding, format::SubtitleFormat, handling::SubtitleHandling,
     language::Language,
 };
+use crate::logger::SubtitleLogger;
 
 #[derive(Default)]
 pub struct SubtitleFileBuilder {
@@ -14,12 +15,20 @@ pub struct SubtitleFileBuilder {
     format: Option<SubtitleFormat>,
     handling: Option<SubtitleHandling>,
     is_original_subtitle_file: bool,
+    subtitle_logger: Option<SubtitleLogger>,
 }
 
 impl SubtitleFileBuilder {
     pub fn new() -> Self {
         SubtitleFileBuilder {
             ..Default::default()
+        }
+    }
+
+    pub fn with_subtitle_logger(self, subtitle_logger: SubtitleLogger) -> Self {
+        SubtitleFileBuilder {
+            subtitle_logger: Some(subtitle_logger),
+            ..self
         }
     }
 
@@ -48,6 +57,7 @@ impl SubtitleFileBuilder {
 
         let (subtitle_file_name, is_transformed) =
             get_file_with_utf8_encoding(file, &format, encoders, &subtitle_mode)?;
+
         Ok(SubtitleFileBuilder {
             file_name: Some(subtitle_file_name),
             format: Some(format),
@@ -87,6 +97,9 @@ impl SubtitleFileBuilder {
         let mode = self.handling.ok_or_else(|| {
             anyhow!("The subtitle mode is not defined. Please select a valid mode.")
         })?;
+        self.subtitle_logger
+            .map(|logger| logger.report_subtitle_parsing_done(&self.language, &file_name))
+            .unwrap_or(Ok(()))?;
 
         return Ok(SubtitleFile {
             file_name,

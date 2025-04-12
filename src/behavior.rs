@@ -1,5 +1,5 @@
 use clap::ValueEnum;
-use std::{fmt, vec};
+use std::fmt;
 
 use crate::subtitle::file::SubtitleFile;
 
@@ -41,17 +41,20 @@ impl Behavior {
     where
         S: AsRef<[SubtitleFile]>,
     {
-        let mut args = vec!["-map".into(), "-0:s".into()];
-        add_subtitles_to_video(&mut args, subtitles);
+        let mut args = Vec::new();
         match self {
             // Don't negatively map any subtitles
             Behavior::Append => {
                 args.extend(["-map".into(), "0:s?".into()]);
+                add_subtitles_to_video(&mut args, subtitles);
                 args
             }
 
             // Negative map all subtitles tracks from the original
-            Behavior::Overwrite => args,
+            Behavior::Overwrite => {
+                add_subtitles_to_video(&mut args, subtitles);
+                args
+            }
         }
     }
 }

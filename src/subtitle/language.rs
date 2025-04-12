@@ -1,3 +1,5 @@
+use std::fmt;
+
 use anyhow::{anyhow, Result};
 use encoding_rs::Encoding;
 
@@ -30,11 +32,20 @@ impl Language {
 
     pub fn preferred_encoders(&self) -> Option<Box<[&'static Encoding]>> {
         match self {
-            Language::Spanish => Some(Box::new([
+            _ => Some(Box::new([
                 encoding_rs::WINDOWS_1252,
                 encoding_rs::ISO_8859_15,
             ])),
-            _ => None,
+        }
+    }
+}
+
+impl fmt::Display for Language {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Language::English => write!(f, "english"),
+            Language::Spanish => write!(f, "spanish"),
+            Language::French => write!(f, "french"),
         }
     }
 }
