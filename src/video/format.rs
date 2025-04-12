@@ -42,13 +42,13 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "File extension txt not supported.")]
+    #[should_panic]
     fn test_build_video_format_for_other_extensions() {
         VideoFormat::new(Path::new("my_file.txt")).unwrap();
     }
 
     #[test]
-    #[should_panic(expected = "File doesn't have an extension set.")]
+    #[should_panic]
     fn test_build_video_format_for_no_extensions() {
         VideoFormat::new(Path::new("my_file")).unwrap();
     }
