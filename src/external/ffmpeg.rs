@@ -51,10 +51,18 @@ where
     // Add subtitles based on behavior selected by user
     args.extend(behavior.get_args_for_adding_subtitles(&subtitles));
 
-    if video_file.format == VideoFormat::MP4 {
+    // Copy all previous streams to output file
+    // It is important this is used first before the -c:s mov_text option
+    // as it will override the codec for the subtitles
+    args.extend(["-c".into(), "copy".into()]);
+
+    // Use mov_text for adding subtitles to MP4
+    if output_file.format == VideoFormat::MP4 {
         args.extend(["-c:s".into(), "mov_text".into()]);
     }
-    args.extend(["-c".into(), "copy".into(), output_name.as_ref().into()]);
+
+    // Copy all previous streams to output file
+    args.push(output_file.file_name.clone().into());
 
     return args;
 }
